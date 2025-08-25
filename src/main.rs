@@ -1,3 +1,6 @@
+mod operations;
+mod trie;
+
 use clap::{Parser, Subcommand};
 
 // Keep a Trie running in the CLI
@@ -17,22 +20,20 @@ enum Commands {
 
 fn main() {
     let cli = Cli::parse();
+    let mut trie = operations::read_trie();
 
     match &cli.command {
         Commands::Add { word } => {
-            println!("Add {}", word);
+            trie.add_word(word);
+            operations::save_trie(&trie);
         }
-        Commands::PrefixSearch { word } => {
-            println!("PrefixSearch {}", word);
-        }
-        Commands::Search { word } => {
-            println!("Search {}", word);
-        }
+        Commands::PrefixSearch { word } => match trie.search_prefix(word) {
+            true => println!("Found prefix!"),
+            false => println!("Did not find prefix :("),
+        },
+        Commands::Search { word } => match trie.search_word(word) {
+            true => println!("Found word!"),
+            false => println!("Did not find word :("),
+        },
     }
 }
-
-// Design:
-// first do clap
-// then, implement accessing stored file + updates
-// then, implement trie,
-// then, integrate trie + file + cli
