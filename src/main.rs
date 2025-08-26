@@ -14,8 +14,9 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     Search { word: String },
-    PrefixSearch { word: String },
+    Prefix { prefix: String },
     Add { word: String },
+    Match { word: String },
 }
 
 fn main() {
@@ -27,7 +28,7 @@ fn main() {
             trie.add_word(word);
             operations::save_trie(&trie);
         }
-        Commands::PrefixSearch { word } => match trie.search_prefix(word) {
+        Commands::Prefix { prefix } => match trie.search_prefix(prefix) {
             true => println!("Found prefix!"),
             false => println!("Did not find prefix :("),
         },
@@ -35,5 +36,11 @@ fn main() {
             true => println!("Found word!"),
             false => println!("Did not find word :("),
         },
+        Commands::Match { word } => {
+            let results = trie.match_pattern(word);
+            for result in results.iter() {
+                println!("{}", result)
+            }
+        }
     }
 }
